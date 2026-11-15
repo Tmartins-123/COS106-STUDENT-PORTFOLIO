@@ -5,7 +5,49 @@ const taskForm = document.getElementById("taskForm");
 const taskInput = document.getElementById("taskInput");
 const taskList = document.getElementById("taskList");
 
-if (taskForm) {
+// Array to store academic tasks
+let tasks = [];
+
+// Function to display academic tasks
+function displayTasks() {
+    taskList.innerHTML = "";
+
+    tasks.forEach(function(task, index) {
+        const listItem = document.createElement("li");
+        const taskLabel = document.createElement("span");
+        const completeButton = document.createElement("button");
+        const deleteButton = document.createElement("button");
+
+        taskLabel.textContent = task.text;
+
+        if (task.completed) {
+            taskLabel.style.textDecoration = "line-through";
+            taskLabel.style.color = "green";
+        }
+
+        completeButton.textContent = task.completed ? "Completed" : "Mark Complete";
+
+        completeButton.addEventListener("click", function() {
+            tasks[index].completed = !tasks[index].completed;
+            displayTasks();
+        });
+
+        deleteButton.textContent = "Delete";
+
+        deleteButton.addEventListener("click", function() {
+            tasks.splice(index, 1);
+            displayTasks();
+        });
+
+        listItem.appendChild(taskLabel);
+        listItem.appendChild(completeButton);
+        listItem.appendChild(deleteButton);
+
+        taskList.appendChild(listItem);
+    });
+}
+
+if (taskForm && taskInput && taskList) {
     taskForm.addEventListener("submit", function(event) {
         event.preventDefault();
 
@@ -16,30 +58,12 @@ if (taskForm) {
             return;
         }
 
-        const listItem = document.createElement("li");
-        const taskLabel = document.createElement("span");
-        const completeButton = document.createElement("button");
-        const deleteButton = document.createElement("button");
-
-        taskLabel.textContent = taskText;
-        completeButton.textContent = "Mark Complete";
-        deleteButton.textContent = "Delete";
-
-        completeButton.addEventListener("click", function() {
-            taskLabel.style.textDecoration = "line-through";
-            taskLabel.style.color = "green";
+        tasks.push({
+            text: taskText,
+            completed: false
         });
 
-        deleteButton.addEventListener("click", function() {
-            listItem.remove();
-        });
-
-        listItem.appendChild(taskLabel);
-        listItem.appendChild(completeButton);
-        listItem.appendChild(deleteButton);
-
-        taskList.appendChild(listItem);
-
+        displayTasks();
         taskInput.value = "";
     });
 }
